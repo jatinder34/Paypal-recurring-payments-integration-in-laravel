@@ -1,65 +1,345 @@
-<p align="center"><img src="https://laravel.com/assets/img/components/logo-laravel.svg"></p>
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
-</p>
+# Paypal Recurring Payments Integration in Laravel
+  
+## First, let’s create a new typical Laravel application
 
-## About Laravel
+```
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel attempts to take the pain out of development by easing common tasks used in the majority of web projects, such as:
+laravel new paypal-demo
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
-Laravel is accessible, yet powerful, providing tools needed for large, robust applications.
+```
 
-## Learning Laravel
+## Next – usual installation steps:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of any modern web application framework, making it a breeze to get started learning the framework.
+```
 
-If you're not in the mood to read, [Laracasts](https://laracasts.com) contains over 1100 video tutorials on a range of topics including Laravel, modern PHP, unit testing, JavaScript, and more. Boost the skill level of yourself and your entire team by digging into our comprehensive video library.
+composer install
+cp .env.example .env (and then editing .env with credentials)
+php artisan key:generate
+php artisan migrate
 
-## Laravel Sponsors
 
-We would like to extend our thanks to the following sponsors for helping fund on-going Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell):
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[British Software Development](https://www.britishsoftware.co)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- [UserInsights](https://userinsights.com)
-- [Fragrantica](https://www.fragrantica.com)
-- [SOFTonSOFA](https://softonsofa.com/)
-- [User10](https://user10.com)
-- [Soumettre.fr](https://soumettre.fr/)
-- [CodeBrisk](https://codebrisk.com)
-- [1Forge](https://1forge.com)
-- [TECPRESSO](https://tecpresso.co.jp/)
-- [Runtime Converter](http://runtimeconverter.com/)
-- [WebL'Agence](https://weblagence.com/)
-- [Invoice Ninja](https://www.invoiceninja.com)
-- [iMi digital](https://www.imi-digital.de/)
-- [Earthlink](https://www.earthlink.ro/)
-- [Steadfast Collective](https://steadfastcollective.com/)
+After that run this command for start the Laravel serve
 
-## Contributing
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+php artisan serve
 
-## Security Vulnerabilities
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
 
-## License
+Next, for this tutorial we will be using a package called [PayPal-PHP-SDK](https://github.com/paypal/PayPal-PHP-SDK/wiki/Installation-Composer)
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+*Here's how*:
+1. Create a billing plan.
+2. Activate the billing plan.
+3. Create a billing agreement.
+4. Execute the billing agreement.
+  
+
+  
+
+Install the REST SDK packege
+
+  
+
+  
+
+```
+
+  
+
+composer require "paypal/rest-api-sdk-php"
+
+  
+
+```
+
+*Note*: To get a client ID and secret, use the Developer Dashboard to [get credentials](https://developer.paypal.com/docs/api/overview/#get-credentials).
+
+
+
+  
+
+#### Install Package Manager
+
+  
+
+  
+
+Steps to install NVM are documented [in the nvm repository](https://github.com/nvm-sh/nvm#installing-and-updating).
+
+  
+
+Install npm using nvm
+
+  
+
+  
+
+```
+
+  
+
+nvm install 13.1.0
+
+  
+
+nvm use 13.1.0
+
+  
+
+npm install
+
+  
+
+```
+
+  
+
+#### Setup Environment
+
+Refer [.env.template](.env.template) for environment variables to be exported to your environment.
+
+#### Setup Database
+
+1. Create databases and users mentioned exported in your environment.
+1. Grant database user superuser privilege to the database to create POSTGIS extension and setup other tables. Reduce this privilege later to just create and modify tables or tuples in this database after you run the migration for the first time.
+1. Install [PostGIS extension](https://postgis.net/install/).
+
+#### Knex migrations and seed the database
+
+  
+
+  
+
+Install Knex globally
+
+  
+
+  
+
+```
+
+  
+
+npm install knex -g
+
+  
+
+```
+
+  
+
+  
+
+Run migrations
+
+  
+
+  
+
+```
+
+  
+
+knex migrate:latest --env test
+
+  
+
+knex migrate:latest --env development
+
+  
+
+```
+
+  
+
+  
+
+Seed the database
+
+  
+
+  
+
+```
+
+  
+
+knex seed:run --env test
+
+  
+
+knex seed:run --env development
+
+  
+
+```
+
+  
+
+  
+
+#### Mocha unit tests
+
+  
+
+  
+
+Install mocha globally.
+
+  
+
+  
+
+```
+
+  
+
+npm install mocha -g
+
+  
+
+```
+
+  
+
+  
+
+Run testing through mocha to see if unit tests pass
+
+  
+
+  
+
+```
+
+  
+
+mocha
+
+  
+
+```
+
+  
+
+  
+
+### Deploy using Docker
+
+  
+
+*Note*:  
+1. The installation assumes you have already installed Postgres DB in your local environment listening for connections at port 5432.
+2. Your Postgres instance should listen to '*' instead of 'localhost' by setting the `listen_addresses` parameter, [this setting can be found in your pgconfig file](https://www.postgresql.org/docs/current/runtime-config-connection.html).
+3. Your `pg_hba.conf` should have a rule added for `host all all <docker-subnet> md5`. Replace `<docker-subnet>` with the actual CIDR for your docker installation's subnet. Note that `172.18.0.0/16` is usually the default.
+
+ 
+
+Clone this repository
+
+
+
+
+
+```
+
+  
+
+cd safeplaces-backend/expressjs
+
+  
+
+```
+  
+
+  
+
+
+
+#### Build Dockerfile
+
+  
+
+  
+
+```
+
+  
+
+docker build -t safeplaces-backend-expressjs .
+
+  
+
+```
+
+  
+
+  
+
+#### Run Dockerfile
+
+```
+
+docker run --rm --name safeplaces-expressjs --env-file=.env -p 3000:3000 safeplaces-backend-expressjs
+
+```
+
+  
+
+*Note*: sample env file can be found at .env.template`.
+
+  
+
+#### Deploy via docker-compose
+
+
+ *Using docker-compose will bring a postgres server along with the application container* 
+ 
+Ensure to create application Environment variables  file .env from .env.template
+
+Ensure to create Postgres Environment variables file  .database.env from .database.env.template
+
+
+#### Run the following:
+
+```
+
+
+docker-compose build
+docker-compose up
+
+
+```
+
+
+### Testing Your Deployment
+
+Run:
+
+```
+
+
+curl http://localhost:3000/health
+
+
+```
+
+Should respond with:
+
+```
+
+
+{
+  "message": "All Ok!"
+}
+
+
+
+```
