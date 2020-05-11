@@ -80,23 +80,25 @@ Once you have completed these steps, you could make the first call for Paypal co
 Create ``` __construct() ``` function in ``` CreatePlan.php ``` file 
 
 ```
-  $this->apiContext = new \PayPal\Rest\ApiContext(
-      new \PayPal\Auth\OAuthTokenCredential(
-          'AYSq3RDGsmBLJE-otTkBtM-jBRd1TCQwFf9RGfwddNXWz0uFU9ztymylRSjk',     // ClientID
-          'EGnHDxD_qRPdaLdZz8iCr8N7_MzF-YHPTkjs6NKYQvQSBngp4PTTVWksdags'      // ClientSecret
-      )
-  );
-
+  public function __construct()
+  {
+    $this->apiContext = new \PayPal\Rest\ApiContext(
+        new \PayPal\Auth\OAuthTokenCredential(
+            'AYSq3RDGsmBLJE-otTkBtM-jBRd1TCQwFf9RGfwddNXWz0uFU9ztymylRSjk',     // ClientID
+            'EGnHDxD_qRPdaLdZz8iCr8N7_MzF-YHPTkjs6NKYQvQSBngp4PTTVWksdags'      // ClientSecret
+        )
+    );
+  }
 
 ```
 
 *Note*: To get a client ID and secret, use the Developer Dashboard to [get credentials](https://developer.paypal.com/docs/api/overview/#get-credentials).
 
 *Here's how*:
-1. #### Create a billing plan.
-2. #### Activate the billing plan.
-3. ##### Create a billing agreement.
-4. #### Execute the billing agreement.
+#### 1. Create a billing plan.
+#### 2. Activate the billing plan.
+##### 3. Create a billing agreement.
+#### 4. Execute the billing agreement.
 
 ### Now let's start the integration
 
