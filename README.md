@@ -22,14 +22,6 @@ php artisan migrate
 
 ```
 
-After that run this command for start the Laravel serve
-
-```
-
-php artisan serve
-
-```
-
 
 Next, for this tutorial we will be using a package called [PayPal-PHP-SDK](https://github.com/paypal/PayPal-PHP-SDK/wiki/Installation-Composer)
 
@@ -44,9 +36,9 @@ composer require "paypal/rest-api-sdk-php"
 
 ```
 
-First, create ``` Paypay ``` folder in ``` app ``` folder and in ``` Paypay ``` folder you need to create ``` CreatePlan.php ``` file.
+First, create ``` Paypay ``` folder in ``` app ``` folder and in ``` Paypay ``` folder you need to create ``` CreatePlan.php ``` class.
 
-In ``` CreatePlan.php ``` file
+In ``` CreatePlan.php ``` class
 
 ```
 <?php 
@@ -60,7 +52,7 @@ class CreatePlan
 
 }
 ```
-After that import these libraries in ``` CreatePlan.php ``` file under the ``` namespace ``` .
+After that import these libraries in ``` CreatePlan.php ``` class under the ``` namespace ``` .
 
 ```
 use PayPal\Api\ChargeModel;
@@ -77,7 +69,7 @@ use PayPal\Common\PayPalModel;
 Once you have completed these steps, you could make the first call for Paypal configration.
 
 
-Create ``` __construct() ``` function in ``` CreatePlan.php ``` file 
+Create ``` __construct() ``` function in ``` CreatePlan.php ``` class 
 
 ```
   public function __construct()
@@ -102,14 +94,86 @@ Create ``` __construct() ``` function in ``` CreatePlan.php ``` file
 
 ### Now let's start the integration
 
-First, Create controller using this command or manually.
+### Create a billing plan.
+
+Let's create function called ``` createPlan ``` in ``` CreatePlan.php ``` class 
+
+ ```
+    public function createPlan()
+    {
+        $plan = new Plan();
+        $plan->setName('Developer Testing Monthly Plan')
+            ->setDescription('Template creation.')
+            ->setType('fixed');
+        $paymentDefinition = new PaymentDefinition();
+        $paymentDefinition->setName('Regular Payments')
+            ->setType('REGULAR')
+            ->setFrequency('Month')
+            ->setFrequencyInterval("2")
+            ->setCycles("12")
+            ->setAmount(new Currency(array('value' => 100, 'currency' => 'USD')));
+        $chargeModel = new ChargeModel();
+        $chargeModel->setType('SHIPPING')
+            ->setAmount(new Currency(array('value' => 10, 'currency' => 'USD')));
+        $paymentDefinition->setChargeModels(array($chargeModel));
+        $merchantPreferences = new MerchantPreferences();
+        $baseUrl = getBaseUrl();
+        $merchantPreferences->setReturnUrl($baseUrl."/excute-agreement/true")
+            ->setCancelUrl($baseUrl."/excute-agreement/false")
+            ->setAutoBillAmount("yes")
+            ->setInitialFailAmountAction("CONTINUE")
+            ->setMaxFailAttempts("0")
+            ->setSetupFee(new Currency(array('value' => 1, 'currency' => 'USD')));
+        $plan->setPaymentDefinitions(array($paymentDefinition));
+        $plan->setMerchantPreferences($merchantPreferences);
+        $output = $plan->create($this->apiContext);
+        dd($output);
+    }
+
+ ```
+
+
+New we need to create controller using this command or manually.
 
 ```
 php artisan make:controller SubscriptionController
 
 ```
 
-Open ```app/http/controller/SubscriptionController.php``` controller
+Open ```app/http/Controllers/SubscriptionController.php``` controller
 
-#### Create a billing plan.
+After create controller import CreatePlan class ``` use App\Paypal\CreatePlan  ``` in this controller
 
+In side this create new function called ``` createPlan ``` like this
+
+```
+
+    public function createPlan()
+    {
+        $plan = new CreatePlan();
+        $plan->create();
+    }
+
+```
+
+New create route for this go to ``` routes/web.php ``` file and create route for create plan 
+
+```
+  Route::get('plan/create','SubscriptionController@createPlan');
+
+```
+
+After that run this command for start the Laravel serve
+
+```
+
+php artisan serve
+
+```
+Run this url in browser
+```
+http://localhost:8000/plan/create
+
+```
+
+![Create Plan](https://ibb.co/xGrzc7j)
