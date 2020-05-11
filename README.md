@@ -177,3 +177,110 @@ http://localhost:8000/plan/create
 ```
 
 ![Create Plan](https://i.ibb.co/rMX5Lw6/Screenshot-2020-05-11-at-6-30-41-PM.png)
+
+You can see this response and in this response you can see Plan id ``` P-3SH54433KE695700CAPXXXXX ```
+
+For getting the plan detail we need to create another function in ``` createPlan ``` class called ```getPlanDetail```
+
+```
+    public function getPlanDetail($id)
+    {
+        return $plan = Plan::get($id, $this->apiContext);
+    }
+
+```
+After create function go to ```SubscriptionController``` controller and crate new function called ``` planDetail ```
+
+```
+  public function planDetail($plan_id)
+  {
+      $plan = new CreatePlan();
+      return $plan->planDetail($plan_id);
+  }
+
+```
+Now create route for plan detail 
+
+```
+Route::get('plan/{planid}','SubscriptionController@planDetail');
+
+```
+
+```
+  {
+    "id": "P-3SH54433KE695700CAPJHEBI",
+    ```"state": "CREATED"```,
+    "name": "Developer Testing Monthly Plan",
+    "description": "Template creation.",
+    "type": "FIXED",
+    "payment_definitions": [
+      {
+        "id": "PD-9WY851217E545260DAPJHEBI",
+        "name": "Regular Payments",
+        "type": "REGULAR",
+        "frequency": "Month",
+        "amount": {
+          "currency": "USD",
+          "value": "100"
+        },
+        "cycles": "12",
+        "charge_models": [
+          {
+            "id": "CHM-2GR18283DN1858322APJHEBI",
+            "type": "SHIPPING",
+            "amount": {
+              "currency": "USD",
+              "value": "10"
+            }
+          }
+        ],
+        "frequency_interval": "2"
+      }
+    ],
+    "merchant_preferences": {
+      "setup_fee": {
+        "currency": "USD",
+        "value": "1"
+      },
+      "max_fail_attempts": "0",
+      "return_url": "http://localhost:3001/excute-agreement?status=true",
+      "cancel_url": "http://localhost:3001/excute-agreement?status=false",
+      "auto_bill_amount": "YES",
+      "initial_fail_amount_action": "CONTINUE"
+    },
+    "create_time": "2020-05-11T13:00:22.917Z",
+    "update_time": "2020-05-11T13:00:22.917Z",
+    "links": [
+      {
+        "href": "https://api.sandbox.paypal.com/v1/payments/billing-plans/P-3SH54433KE695700CAPJHEBI",
+        "rel": "self",
+        "method": "GET"
+      }
+    ]
+  }
+```
+### Activate the billing plan.
+ 
+For activating this plan we need to create another function in ``` createPlan ``` class
+
+Create function for activating plan called ``` activatePlan ```
+
+  public function activatePlan($id)
+  {
+      $createdPlan = $this->planDetail($id);
+      $patch = new Patch();
+
+      $value = new PayPalModel('{
+          "state":"ACTIVE"
+          }');
+
+      $patch->setOp('replace')
+          ->setPath('/')
+          ->setValue($value);
+      $patchRequest = new PatchRequest();
+      $patchRequest->addPatch($patch);
+
+      $createdPlan->update($patchRequest, $this->apiContext);
+
+      return $plan = Plan::get($createdPlan->getId(), $this->apiContext);
+  }
