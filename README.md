@@ -176,4 +176,4 @@ http://localhost:8000/plan/create
 
 ```
 
-![Create Plan](https://ibb.co/xGrzc7j)
+![Create Plan](https://i.ibb.co/rMX5Lw6/Screenshot-2020-05-11-at-6-30-41-PM.png)
